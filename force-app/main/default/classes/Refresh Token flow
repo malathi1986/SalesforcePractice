@@ -1,0 +1,25 @@
+URL to get the authorization code:
+
+https://aaa-7e-dev-ed.develop.lightning.force.com/services/oauth2/authorize?response_type=code&client_id=3MVG91oqviqJKoEEKn2bKfSYoh_.KqzCNmv2nr.Tx4NUc6XweA2F.AsHDxbIRFSSI7enbt2Qkx_B7RR9HxDIn&redirect_uri=https://test.one.com/
+
+
+authorization_code:
+aPrxvF1tzpdZgIOizOz1Nfvtcwtil9ZJ2FZ0uSrTRND1P_0eP6J12cAtvlZH31rXcupc3lEi6g%3D%3D
+
+
+URL with appended authorization code to get the refresh token:
+https://aaa-7e-dev-ed.develop.lightning.force.com/services/oauth2/token?code=aPrxvF1tzpdZgIOizOz1Nfvtcwtil9ZJ2FZ0uSrTRND1P_0eP6J12cAtvlZH31rXcupc3lEi6g%3D%3D&grant_type=authorization_code&client_id=3MVG91oqviqJKoEEKn2bKfSYoh_.KqzCNmv2nr.Tx4NUc6XweA2F.AsHDxbIRFSSI7enbt2Qkx_B7RR9HxDIn&client_secret=FBB4015E89BDD38B12D54F2E1BCCBB08AD946EE98281FB0FD130DCC4DD38F00C&redirect_uri=https://test.one.com/
+
+
+refresh token:
+5Aep861GSSd.UBhhUJD3Bx3Kb0Px.hcVJ557RC5K7JQmzhdovF5VLDNB_IbIkbBDYiLj5myCUZZ92Kxf3gBFRio
+
+get the access token by sending the refresh token in the following format:
+
+String queryParameters = '?grant_type='+auth.Grant_Type__c+'&client_id='+auth.Client_Id__c+'&client_secret='+auth.Client_Secret__c+'&refresh_token='+auth.Refresh_Token__c;
+
+ auth.Access_Token_URL__c= https://login.salesforce.com/services/oauth2/token; 
+
+String endPoint = auth.Access_Token_URL__c+queryParameters;
+
+
