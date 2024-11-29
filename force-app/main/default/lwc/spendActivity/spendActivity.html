@@ -1,0 +1,65 @@
+<template>
+       <lightning-tabset>
+        
+       
+        <lightning-tab label="Spend Activity">
+            <div class="slds-grid">
+                <div class="slds-col slds-size_2-of-12 slds-p-around_medium">
+          
+        
+            <lightning-combobox
+            name="view"
+            label="VIEW:"
+            value={value}
+            placeholder="Select View"
+            options={viewoptions}
+            onchange={handleChange} ></lightning-combobox> </div>
+            
+            <div class="slds-col slds-size_2-of-12 slds-p-around_medium">
+            <lightning-combobox
+            name="timeframe"
+            label="TIME FRAME:"
+            value={value}
+            placeholder="Select TimeFrame"
+            options={timeframeoptions}
+            onchange={handleChange} ></lightning-combobox> </div>
+
+            <div class="slds-col slds-size_2-of-12 slds-p-around_medium">
+            <lightning-combobox
+            name="resolutioncode"
+            label="RESOLUTION CODE:"
+            value={value}
+            placeholder="Select ResolutionCode"
+            options={viewoptions}
+            onchange={handleChange} ></lightning-combobox></div>  
+            <div class="slds-p-around_medium">
+                <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend" label="MIN.AGGREGATED AMOUNT:"></lightning-input> 
+               </div>
+                <div class="slds-p-around_medium lgc-bg" style="display: flex;float: left; padding-top:42px">
+                        <lightning-button variant="brand" label="Show Results >" title="Primary action" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                </div>
+        </div>
+    </lightning-tab>
+    <template if:true={showAlertdatatable}></template>    
+            <lightning-tab label="Alerts">
+                <div style="height:50px;">
+            <lightning-button variant="Neutral" label="Notifications" title="Primary action" onclick={handleNotifications} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button variant="Neutral" label="Active Alerts" title="Primary action" onclick={handleActiveAlerts} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action" onclick={handleExpiredAlerts} class="slds-m-left_x-small"></lightning-button>
+           
+            <lightning-button variant="brand" label="+ Add Alert" title="Primary action" onclick={handleAddAlert} class="slds-m-left_x-small"></lightning-button>
+        </div></lightning-tab></lightning-tabset>
+               
+        
+               
+                
+            <div style="height: 300px;width: 1000px;">
+                <lightning-datatable
+                        key-field="id"
+                        data={data}
+                        columns={columns}>
+                </lightning-datatable>
+            </div>          
+            </lightning-tab>
+    </lightning-tabset> </div>  
+</template>

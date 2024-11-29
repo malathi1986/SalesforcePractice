@@ -47,11 +47,7 @@ public static void isAfterUpdateOrInsert(List<Account> newAccounts){
                                            AccountId = acc.Id,
                                            StageName = 'Prospecting', 
                                            Amount = 0, 
-                                           CloseDate = System.today() + 90);
-                                           
-                                           
-                                           
-                                           
+                                           CloseDate = System.today() + 90);                                      
         oppList.add(newOpp);
     } 
     
