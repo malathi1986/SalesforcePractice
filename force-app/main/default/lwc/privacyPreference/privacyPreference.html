@@ -1,0 +1,26 @@
+<template>
+   <!-- <lightning-input type="text" label="PhoneNumber" placeholder="Enter 10Digit Phone Number here..."></lightning-input>-->
+    <div class="slds-p-around_medium lgc-bg" style="display: flex;float: left">
+        <lightning-input type="text" placeholder="Enter 10Digit Phone Number here..." name="phoneNumber"></lightning-input> 
+        </div>
+        <div class="slds-p-around_medium lgc-bg" style="display: flex;float: left; padding-top:32px">
+            <lightning-button variant="brand" label="Go" title="Primary action" onclick={handleGo} class="slds-m-left_x-small"></lightning-button>
+           <!-- <div class="slds-p-around_medium lgc-bg" style="display: flex;float: left"></div> 
+            <lightning-formatted-rich-text value={status}></lightning-formatted-rich-text>-->
+            
+            <template if:true={error}>
+                <lightning-datatable>Some error occured.</lightning-datatable>         
+            </template>
+           
+    </div> 
+    <div class="slds-p-around_medium lgc-bg" style="display: flex;float: left; padding-top:32px">
+
+        <template if:true={status}>
+
+            <lightning-datatable  key-field="id" data={data} columns={columns} >
+                </lightning-datatable>
+       </template>
+
+    </div>
+    
+    </template>

@@ -1,0 +1,18 @@
+<template>
+ <p>This is my First Sample LWC component</p> 
+ <div class="slds-p-around_medium lgc-bg">
+    <lightning-input type="text" label="First Name" placeholder="Enter First Name" onchange={setfirstName}></lightning-input>
+</div>  
+<div>
+    <template if:false={showfirstName}> 
+    <lightning-button variant="brand" label="Show" title="Show FirstName" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+    </template>
+    <template if:true={showfirstName}>
+    <lightning-button variant="brand" label="Disable" title="Disable FirstName" onclick={handleDisable} class="slds-m-left_x-small"></lightning-button>
+</template>
+</div>
+<template if:true={showfirstName}>
+    First Name:{firstName}
+</template>
+
+</template>

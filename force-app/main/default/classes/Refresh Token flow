@@ -1,0 +1,50 @@
+
+OAuth 2.0, which stands for “Open Authorization”, is a standard designed to allow a website or application to access resources hosted by other web apps on behalf of a user. 
+
+Principles of OAuth2.0:
+
+OAuth 2.0 is an authorization protocol and NOT an authentication protocol. As such, it is designed primarily as a means of granting access to a set of resources, for example, remote APIs or user data.
+
+OAuth 2.0 uses Access Tokens. An Access Token is a piece of data that represents the authorization to access resources on behalf of the end-user. OAuth 2.0 doesn’t define a specific format for Access Tokens. However, in some contexts, the JSON Web Token (JWT) format is often used. This enables token issuers to include data in the token itself. Also, for security reasons, Access Tokens may have an expiration date.
+
+
+How Does OAuth 2.0 Work?
+At the most basic level, before OAuth 2.0 can be used, the Client must acquire its own credentials, a _client id _ and client secret, from the Authorization Server in order to identify and authenticate itself when requesting an Access Token.
+
+Using OAuth 2.0, access requests are initiated by the Client, e.g., a mobile app, website, smart TV app, desktop application, etc. The token request, exchange, and response follow this general flow:
+
+The Client requests authorization (authorization request) from the Authorization server, supplying the client id and secret to as identification; it also provides the scopes and an endpoint URI (redirect URI) to send the Access Token or the Authorization Code to.
+
+The Authorization server authenticates the Client and verifies that the requested scopes are permitted.
+
+The Resource owner interacts with the Authorization server to grant access.
+
+The Authorization server redirects back to the Client with either an Authorization Code or Access Token, depending on the grant type, as it will be explained in the next section. A Refresh Token may also be returned.
+
+With the Access Token, the Client requests access to the resource from the Resource server.
+
+URL to get the authorization code:
+
+https://aaa-7e-dev-ed.develop.lightning.force.com/services/oauth2/authorize?response_type=code&client_id=3MVG91oqviqJKoEEKn2bKfSYoh_.KqzCNmv2nr.Tx4NUc6XweA2F.AsHDxbIRFSSI7enbt2Qkx_B7RR9HxDIn&redirect_uri=https://test.one.com/
+
+
+authorization_code:
+aPrxvF1tzpdZgIOizOz1Nfvtcwtil9ZJ2FZ0uSrTRND1P_0eP6J12cAtvlZH31rXcupc3lEi6g%3D%3D
+
+
+URL with appended authorization code to get the refresh token:
+https://aaa-7e-dev-ed.develop.lightning.force.com/services/oauth2/token?code=aPrxvF1tzpdZgIOizOz1Nfvtcwtil9ZJ2FZ0uSrTRND1P_0eP6J12cAtvlZH31rXcupc3lEi6g%3D%3D&grant_type=authorization_code&client_id=3MVG91oqviqJKoEEKn2bKfSYoh_.KqzCNmv2nr.Tx4NUc6XweA2F.AsHDxbIRFSSI7enbt2Qkx_B7RR9HxDIn&client_secret=FBB4015E89BDD38B12D54F2E1BCCBB08AD946EE98281FB0FD130DCC4DD38F00C&redirect_uri=https://test.one.com/
+
+
+refresh token:
+5Aep861GSSd.UBhhUJD3Bx3Kb0Px.hcVJ557RC5K7JQmzhdovF5VLDNB_IbIkbBDYiLj5myCUZZ92Kxf3gBFRio
+
+get the access token by sending the refresh token in the following format:
+
+String queryParameters = '?grant_type='+auth.Grant_Type__c+'&client_id='+auth.Client_Id__c+'&client_secret='+auth.Client_Secret__c+'&refresh_token='+auth.Refresh_Token__c;
+
+ auth.Access_Token_URL__c= https://login.salesforce.com/services/oauth2/token; 
+
+String endPoint = auth.Access_Token_URL__c+queryParameters;
+
+
