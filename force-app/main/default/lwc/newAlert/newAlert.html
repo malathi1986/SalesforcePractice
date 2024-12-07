@@ -1,95 +1,105 @@
 <template>
-<lightning-modal-header label={content}></lightning-modal-header>
+    <lightning-modal-header label={content}></lightning-modal-header>
 
-<lightning-modal-body>
-    <form>
-        
-<div class="slds-p-around_medium">
-    <lightning-input type="text" label="Alert Name" required onchange={handleAlertName} value={alertName}></lightning-input>
-    <template if:false={isAlertNameEntered}>
-        <p><lightning-formatted-text style ="color:red" value="Alert Name is not Entered" ></lightning-formatted-text></p>
-        </template>    
-</div> 
-<div class="slds-grid">
-    <div class="slds-p-around_small slds-size_4-of-12">
-        <lightning-combobox
-        name="alertType"
-        label="Alert Type:"
-        value={selectedAlertType}
-        placeholder="Select Type"
-        options={alerttypes}
-        onchange={handleAlertType} required></lightning-combobox>
-        <template if:false={isAlertTypeSelected}>
-        <p><lightning-formatted-text style ="color:red" value="Alert Type value is not selected" ></lightning-formatted-text></p>
-        </template>
-    </div>    
-    <div class="slds-p-around_small slds-size_4-of-12">
-        <lightning-combobox
-        name="Transaction"
-        label="Transaction:"
-        value={selectedTransactionType}
-        placeholder="Select Type"
-        options={transaction}
-        onchange={handleTransactionType} required></lightning-combobox>
-        <template if:false={isTransactionTypeSelected}>
-        <p><lightning-formatted-text style ="color:red" value="Transaction Type is not selected" ></lightning-formatted-text></p>
-        </template> 
-    </div>
-    <div class="slds-p-around_small slds-col slds-size_4-of-12">
-        <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend" value={enteredAmount} onchange={handleminAggregatedSpend} label="Amount Greater than:" required></lightning-input> 
-        <template if:false={isEnteredAmount}>
-        <p><lightning-formatted-text style ="color:red" value="Aggregated Spend Amount should be Minimum $2500" ></lightning-formatted-text></p>
-        </template>   
-    </div>
-    </div>
-<div class="slds-grid">
-    <div class="slds-p-around_small slds-col slds-size_3-of-12">
-        <lightning-combobox
-        name="merchant"
-        label="Merchant:"
-        value={selectedMerchantType}
-        placeholder="Select Type"
-        options={merchant}
-        onchange={handleMerchantType} required></lightning-combobox> 
-        <template if:false={isMerchantTypeSelected}>
-        <p><lightning-formatted-text style ="color:red" value="Merchant Type is not selected" ></lightning-formatted-text></p>
-        </template>
-    </div>
+    <lightning-modal-body>
+        <form>
+            <div class="slds-modal__container slds-modal__content">
+                <div class="slds-p-around_medium">
+                    <lightning-input type="text" label="Alert Name" required onchange={handleAlertName}
+                        value={alertName}></lightning-input>
+                    <template if:false={isAlertNameEntered}>
+                        <p><lightning-formatted-text style="color:red"
+                                value="Alert Name is not Entered"></lightning-formatted-text></p>
+                    </template>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-p-around_small slds-size_4-of-12">
+                        <lightning-combobox name="alertType" label="Alert Type:" value={selectedAlertType}
+                            placeholder="Select Type" options={alerttypes} onchange={handleAlertType}
+                            required></lightning-combobox>
+                        <template if:false={isAlertTypeSelected}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Alert Type value is not selected"></lightning-formatted-text></p>
+                        </template>
+                    </div>
+                    <div class="slds-p-around_small slds-size_4-of-12">
+                        <lightning-combobox name="Transaction" label="Transaction:" value={selectedTransactionType}
+                            placeholder="Select Type" options={transaction} onchange={handleTransactionType}
+                            required></lightning-combobox>
+                        <template if:false={isTransactionTypeSelected}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Transaction Type is not selected"></lightning-formatted-text></p>
+                        </template>
+                    </div>
+                    <div class="slds-p-around_small slds-col slds-size_4-of-12">
+                        <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend"
+                            value={enteredAmount} onchange={handleminAggregatedSpend} label="Amount Greater than:"
+                            required></lightning-input>
+                        <template if:false={isEnteredAmount}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Aggregated Spend Amount should be Minimum $2500"></lightning-formatted-text>
+                            </p>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-grid">
+                    <div class="slds-p-around_small slds-col slds-size_3-of-12">
+                        <lightning-combobox name="merchant" label="Merchant:" value={selectedMerchantType}
+                            placeholder="Select Type" options={merchant} onchange={handleMerchantType}
+                            required></lightning-combobox>
+                        <template if:false={isMerchantTypeSelected}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Merchant Type is not selected"></lightning-formatted-text></p>
+                        </template>
+                    </div>
 
-    <div class="slds-p-around_small slds-col slds-size_3-of-12">
-        <lightning-input type="text" label="Specific Merchant" disabled onchange={handleSpecificMerchant} value={specificMerchantinputValue}></lightning-input>    
-        <template if:false={isMerchantTypeEntered}>
-            <p><lightning-formatted-text style ="color:red" value="Specific Merchant type is selected and value is not Entered" ></lightning-formatted-text></p>
-        </template>
-    </div> 
-    
+                    <div class="slds-p-around_small slds-col slds-size_3-of-12">
+                        <lightning-input type="text" label="Specific Merchant" disabled
+                            onchange={handleSpecificMerchant} value={specificMerchantinputValue}></lightning-input>
+                        <template if:false={isMerchantTypeEntered}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Specific Merchant type is selected and value is not Entered"></lightning-formatted-text>
+                            </p>
+                        </template>
+                    </div>
 
-    <div class="slds-p-around_small slds-col slds-size_3-of-12">
-        <lightning-input type="date" label="Date Field" value={selectedDate}  onchange={handleSelectedDate}></lightning-input>
-            <template if:false={isPastDateSelected}>
-        <p><lightning-formatted-text style ="color:red" value="Date must be today or future dates" ></lightning-formatted-text></p>
-        </template>
-    </div>
-</div>
-<div class="slds-p-around_medium lgc-medium">
-<lightning-input type="text" label="Add a Note:" onchange={handleNotes}></lightning-input> 
-<p>400 characters remaining</p>   
-</div> 
 
-<div class="slds-p-around_medium lgc-medium">
-<lightning-input type="text" label="Additional Email Recipients(Up to 5 emails,seperate with comma):" onchange={handleEmailRecipients} ></lightning-input>     
-</div> 
+                    <div class="slds-p-around_small slds-col slds-size_3-of-12">
+                        <lightning-input type="date" label="Date Field" value={selectedDate}
+                            onchange={handleSelectedDate}></lightning-input>
+                        <template if:false={isPastDateSelected}>
+                            <p><lightning-formatted-text style="color:red"
+                                    value="Date must be today or future dates"></lightning-formatted-text></p>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-p-around_medium lgc-medium">
+                    <lightning-input type="text" label="Add a Note:" onchange={handleNotes}></lightning-input>
+                    <p>400 characters remaining</p>
+                </div>
 
-<div class="slds-p-around_medium lgc-medium">
-<p>Notification Delivery Options</p>
-    <lightning-input label="Email me when an alert is triggered" class="slds-p-left_xx-large" type="checkbox" checked={checkboxVal} onchange={handleNotificationsDeliveryOptions} ></lightning-input>   
-</div>
-</form>
-</lightning-modal-body>
-<lightning-modal-footer>
-<div class="slds-p-vertical_medium lgc-medium">
-    <lightning-button variant="Neutral" label="Cancel" title="Primary action" onclick={handlecancel} class="slds-m-right_x-small"></lightning-button>
-    <lightning-button variant="Neutral" label="Save" title="Primary action" onclick={handleSave} class="slds-m-left_x-small"></lightning-button>    
-</div>
-</lightning-modal-footer>
+                <div class="slds-p-around_medium lgc-medium">
+                    <lightning-input type="text"
+                        label="Additional Email Recipients(Up to 5 emails,seperate with comma):"
+                        onchange={handleEmailRecipients}></lightning-input>
+                </div>
+
+                <div class="slds-p-around_medium lgc-medium">
+                    <p>Notification Delivery Options</p>
+                    <lightning-input label="Email me when an alert is triggered" class="slds-p-left_xx-large"
+                        type="checkbox" checked={checkboxVal}
+                        onchange={handleNotificationsDeliveryOptions}></lightning-input>
+                </div>
+            </div>
+        </form>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <div class="slds-p-vertical_medium lgc-medium">
+            <lightning-button variant="Neutral" label="Cancel" title="Primary action" onclick={handlecancel}
+                class="slds-m-right_x-small"></lightning-button>
+            <lightning-button variant="Neutral" label="Save" title="Primary action" onclick={handleSave}
+                class="slds-m-left_x-small"></lightning-button>
+        </div>
+
+    </lightning-modal-footer>
 </template>

@@ -1,0 +1,58 @@
+<template>
+    <lightning-tabset>
+        <lightning-tab label="Spend Activity" class="lightning-tab-css">
+            <div class="slds-modal__container">
+                <div>
+                    <lightning-combobox name="view" label="VIEW:" value={value} placeholder="Select View"
+                        options={viewoptions} onchange={handleChange} class="inner-comp"></lightning-combobox>
+
+                    <lightning-combobox name="timeframe" label="TIME FRAME:" value={value}
+                        placeholder="Select TimeFrame" options={timeframeoptions} onchange={handleChange}
+                        class="inner-comp"></lightning-combobox>
+
+                    <lightning-combobox name="resolutioncode" label="RESOLUTION CODE:" value={value}
+                        placeholder="Select ResolutionCode" options={viewoptions} onchange={handleChange}
+                        class="inner-comp"></lightning-combobox>
+
+                    <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend"
+                        label="MIN.AGGREGATED AMOUNT:" class="inner-comp"></lightning-input>
+
+                    <lightning-button variant="brand" label="Show Results >" title="Primary action"
+                        onclick={handleClick} class="inner-comp"></lightning-button>
+                </div>
+            </div>
+        </lightning-tab>
+        <lightning-tab label="Alerts">
+            <div class="slds-modal__container">
+                <div>
+                    <lightning-button variant="Neutral" label="Notifications" title="Primary action"
+                        onclick={handleNotifications} class="slds-m-left_x-small"></lightning-button>
+
+                    <lightning-button variant="Neutral" label="Active Alerts" title="Primary action"
+                        onclick={handleActiveAlerts} value={activeAlertValue}
+                        class="slds-m-left_x-small"></lightning-button>
+
+                    <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action"
+                        onclick={handleExpiredAlerts} value={expiredAlertValue}
+                        class="slds-m-left_x-small"></lightning-button>
+
+                    <lightning-button variant="brand" label="+ Add Alert" title="Primary action"
+                        onclick={handleAddAlert} class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </div>
+
+            <template if:true={isActiveAlerts}>
+                <div style="height: 300px;width: 1000px;">
+                    <lightning-datatable key-field="id" data={activeAlertRecordsList} columns={columns}>
+                    </lightning-datatable>
+                </div>
+            </template>
+            <template if:true={isExpiredAlerts}>
+                <div style="height: 300px;width: 1000px;">
+                    <lightning-datatable key-field="id" data={expiredAlertRecordsList} columns={columns}>
+                    </lightning-datatable>
+                </div>
+            </template>
+        </lightning-tab>
+    </lightning-tabset>
+</template>
