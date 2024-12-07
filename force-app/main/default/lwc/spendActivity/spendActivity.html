@@ -44,22 +44,41 @@
             <lightning-tab label="Alerts">
                 <div style="height:50px;">
             <lightning-button variant="Neutral" label="Notifications" title="Primary action" onclick={handleNotifications} class="slds-m-left_x-small"></lightning-button>
-            <lightning-button variant="Neutral" label="Active Alerts" title="Primary action" onclick={handleActiveAlerts} class="slds-m-left_x-small"></lightning-button>
-            <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action" onclick={handleExpiredAlerts} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button variant="Neutral" label="Active Alerts" title="Primary action" onclick={handleActiveAlerts}  value={activeAlertValue} class="slds-m-left_x-small"></lightning-button>
+            <!--<template if:true={activeAlertRecordsList}>
+                <lightning-datatable
+                        key-field="id"
+                        data={activeAlertRecordsList}
+                        columns={columns}>
+                </lightning-datatable>
+           </template>-->
+            <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action" onclick={handleExpiredAlerts}  value={expiredAlertValue} class="slds-m-left_x-small"></lightning-button>
            
             <lightning-button variant="brand" label="+ Add Alert" title="Primary action" onclick={handleAddAlert} class="slds-m-left_x-small"></lightning-button>
-        </div></lightning-tab></lightning-tabset>
+        
                
         
                
-                
+        <template if:true={isActiveAlerts}>
             <div style="height: 300px;width: 1000px;">
-                <lightning-datatable
+                
+               <lightning-datatable
                         key-field="id"
-                        data={data}
+                        data={activeAlertRecordsList}
                         columns={columns}>
                 </lightning-datatable>
-            </div>          
+            </div>      
+        </template>   
+        <template if:true={isExpiredAlerts}>
+            <div style="height: 300px;width: 1000px;">
+                
+               <lightning-datatable
+                        key-field="id"
+                        data={expiredAlertRecordsList}
+                        columns={columns}>
+                </lightning-datatable>
+            </div>      
+        </template>  </div>
             </lightning-tab>
-    </lightning-tabset> </div>  
+    </lightning-tabset>  
 </template>

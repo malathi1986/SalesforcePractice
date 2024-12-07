@@ -4,7 +4,7 @@
     <lightning-input type="text" label="First Name" placeholder="Enter First Name" onchange={setfirstName}></lightning-input>
 </div>  
 <div>
-    <template if:false={showfirstName}> 
+    <template if:true={showfirstName}> 
     <lightning-button variant="brand" label="Show" title="Show FirstName" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
     </template>
     <template if:true={showfirstName}>
