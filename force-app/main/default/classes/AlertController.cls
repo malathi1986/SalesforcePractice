@@ -26,14 +26,14 @@ public with sharing class AlertController {
     }
     @AuraEnabled(cacheable=false)
     public static List<Alert__c> getActiveAlertRecords(){
-        List<Alert__c> activeAlertRecords= [SELECT Id,Alert_Type__c,Merchant_Type__c,AlertDate__c FROM Alert__c WHERE AlertDate__c>=Today];
+        List<Alert__c> activeAlertRecords= [SELECT Id,AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c FROM Alert__c WHERE AlertDate__c>=Today];
         system.debug('activeALERTS====>'+activeAlertRecords);
         return activeAlertRecords;
     }
             
     @AuraEnabled(cacheable=false)
     public static List<Alert__c> getExpiredAlertRecords(){
-        List<Alert__c> expiredAlertRecords= [SELECT Id,Alert_Type__c,Merchant_Type__c,AlertDate__c FROM Alert__c WHERE AlertDate__c<Today];
+        List<Alert__c> expiredAlertRecords= [SELECT Id,AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c FROM Alert__c WHERE AlertDate__c<Today];
         system.debug('activeALERTS====>'+expiredAlertRecords);
         return expiredAlertRecords;
     }

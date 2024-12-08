@@ -8,8 +8,17 @@ import myModal from 'c/newAlert';
 
 const columns = [
     { label: 'Id', fieldName: 'Id' },
-    { label: 'AlertDate__c', fieldName: 'AlertDate__c'}
+    { label: 'Alert Date', fieldName: 'AlertDate__c'},
+    { label: 'Alert Name', fieldName: 'AlertName__c'},
+    { label: 'Alert Type', fieldName: 'Alert_Type__c'},
+    { label: 'Amount', fieldName: 'Amount__c'},
+    { label: 'Email Receipients', fieldName: 'EmailRecipients__c'},
+    { label: 'Merchant Type', fieldName: 'Merchant_Type__c'},
+    { label: 'Notes', fieldName: 'Notes__c'},
+    { label: 'Transaction Type', fieldName: 'Transcation_Type__c'},
 ];
+
+//AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c
 
 export default class realtime_spend extends LightningElement {
 
