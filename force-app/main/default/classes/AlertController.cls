@@ -26,7 +26,7 @@ public with sharing class AlertController {
     }
     @AuraEnabled(cacheable=false)
     public static List<Alert__c> getActiveAlertRecords(){
-        List<Alert__c> activeAlertRecords= [SELECT Id,AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c FROM Alert__c WHERE AlertDate__c>=Today];
+        List<Alert__c> activeAlertRecords= [SELECT Id,AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c FROM Alert__c WHERE AlertDate__c>=Today LIMIT 20];
         system.debug('activeALERTS====>'+activeAlertRecords);
         return activeAlertRecords;
     }
