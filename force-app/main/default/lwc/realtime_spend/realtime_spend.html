@@ -40,7 +40,7 @@
                         onclick={handleAddAlert} class="slds-m-left_x-small"></lightning-button>
                 </div>
             </div>
-
+            
             <template if:true={isActiveAlerts}>
                 <div style="height: 300px;width: 1000px;">
                     <lightning-datatable data-id="datatable" key-field="id" data={activeAlertRecordsList} columns={columns} selected-rows={selectedRows}

@@ -1,12 +1,10 @@
-import { LightningElement,track,wire } from 'lwc';
+import { LightningElement,track,wire,api } from 'lwc';
 import getActiveAlertRecords from '@salesforce/apex/AlertController.getActiveAlertRecords';
 import getExpiredAlertRecords from '@salesforce/apex/AlertController.getExpiredAlertRecords';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
-
+import {CurrentPageReference} from 'lightning/navigation';
 
 import myModal from 'c/newAlert';
-
 
 const columns = [
     { label: 'Id', fieldName: 'Id' },
@@ -24,6 +22,7 @@ const columns = [
 
 export default class realtime_spend extends LightningElement {
 
+    @api recordId;
     @track activeAlertRecordsList;
     @track expiredAlertRecordsList
     @track isActiveAlerts=false;
@@ -31,6 +30,7 @@ export default class realtime_spend extends LightningElement {
     @track expiredAlertValue
     @track error
     @track showAlertdatatable=false;
+    @track alert;
 
     page = 1; //initialize 1st page for pagination
     activeAlertRecordsList = []; //contains all the records.
@@ -42,6 +42,7 @@ export default class realtime_spend extends LightningElement {
     totalRecountCount = 0; //total record count received from all retrieved records
     totalPage = 0; //total number of page is needed to display all records
     selectedRows = [];
+
 
     get alerttypes() {
         return [
@@ -58,10 +59,15 @@ export default class realtime_spend extends LightningElement {
         ];
     }
     async handleAddAlert(){
+        /*let recordId=event.target.value;
+        this.template.querySelector('c-realtime_-spend').recordId = recordId;*/
+        console.log('recordId before opening the modal ======',this.recordId);
         const result = await myModal.open({
             size: 'medium',
             description: 'Accessible description of modal\'s purpose',
-            content: 'New Alert',
+            content: {
+                accountId : this.recordId
+            },
         });
         console.log(result);
 
@@ -163,6 +169,7 @@ export default class realtime_spend extends LightningElement {
         console.log('selectedRows==> ' + JSON.stringify(this.selectedRows));
     }
     showToast(message, variant, title) {
+        
         const event = new ShowToastEvent({
             title: title,
             message: message,
