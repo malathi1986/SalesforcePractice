@@ -1,4 +1,4 @@
-import { LightningElement,track,wire } from 'lwc';
+import { LightningElement,track } from 'lwc';
 import getActiveAlertRecords from '@salesforce/apex/AlertController.getActiveAlertRecords';
 import getExpiredAlertRecords from '@salesforce/apex/AlertController.getExpiredAlertRecords';
 
@@ -11,7 +11,7 @@ const columns = [
     { label: 'AlertDate__c', fieldName: 'AlertDate__c'}
 ];
 
-export default class SpendActivity extends LightningElement {
+export default class SpendActivity extends myModal {
 
     @track activeAlertRecordsList;
     @track expiredAlertRecordsList
@@ -44,6 +44,9 @@ export default class SpendActivity extends LightningElement {
         });
         console.log(result);
 
+    }
+    handleNotifications(event){
+        console.log('Method invoked....');
     }
     handleActiveAlerts(event){
         console.log('Method invoked....');

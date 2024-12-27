@@ -11,12 +11,9 @@ public with sharing class AlertController {
         alert
       );
 
-      Object creditCardObj = alertObject.get(
-        'creditCardNumbers'
-      );
+      Object creditCardObj = alertObject.get('creditCardNumbers');
       List<Object> creditCardNumbers = (List<Object>) creditCardObj;
 
-      
       for (Object cardNumber : creditCardNumbers) {
         Map<String, Object> alertData = (Map<String, Object>) alertObject.get(
           'alert'
@@ -25,19 +22,28 @@ public with sharing class AlertController {
 
         Set<String> fieldNames = alertData.keySet();
 
-        Map<String, Schema.DescribeFieldResult> fieldTypeInfo = ObjectMetadataUtil.getFieldsType('Alert__c', fieldNames);
+        Map<String, Schema.DescribeFieldResult> fieldTypeInfo = ObjectMetadataUtil.getFieldsType(
+          'Alert__c',
+          fieldNames
+        );
 
         for (String fieldName : fieldNames) {
           Schema.DescribeFieldResult fieldDesc = fieldTypeInfo.get(fieldName);
-          Schema.DisplayType dataType = fieldDesc.getType(); 
-          if(dataType == Schema.DisplayType.STRING){
+          Schema.DisplayType dataType = fieldDesc.getType();
+          if (dataType == Schema.DisplayType.STRING) {
             alertRecord.put(fieldName, (String) alertData.get(fieldName));
           }
-          if(dataType == Schema.DisplayType.DOUBLE){
-            alertRecord.put(fieldName, Decimal.valueOf((String)alertData.get(fieldName)));
+          if (dataType == Schema.DisplayType.DOUBLE) {
+            alertRecord.put(
+              fieldName,
+              Decimal.valueOf((String) alertData.get(fieldName))
+            );
           }
-          if(dataType == Schema.DisplayType.DATE){
-            alertRecord.put(fieldName, Date.valueOf((String) alertData.get(fieldName)));
+          if (dataType == Schema.DisplayType.DATE) {
+            alertRecord.put(
+              fieldName,
+              Date.valueOf((String) alertData.get(fieldName))
+            );
           }
         }
         String creditCardNumber = (String) cardNumber;
@@ -61,8 +67,76 @@ public with sharing class AlertController {
     }
     return alertRecord;
   }
+  /**
+ * { label: 'Id', fieldName: 'Id' },
+    { label: 'Account', fieldName: 'Account__c'},
+    { label: 'Amount', fieldName: 'Amount__c'},
+    { label: 'CardNumber', fieldName: 'CardNumber__c'},
+    { label: 'Merchant Type', fieldName: 'Merchant_Type__c'},
+    { label: 'CreatedBy', fieldName: 'CreatedById'},
+    { label: 'Transaction Type', fieldName: 'Transcation_Type__c'},
+ */
   @AuraEnabled(cacheable=false)
-  public static List<Alert__c> getActiveAlertRecords() {
+  public static List<Notification__c> getSpendActivityRecords(
+    String spendActivity
+  ) {
+    System.debug('inside Apex method===>' + spendActivity);
+    Map<String, Object> spendActivityObj = (Map<String, Object>) JSON.deserializeUntyped(
+      spendActivity
+    );
+    String accountId = (String) spendActivityObj.get('recordId');
+    Object view = spendActivityObj.get('view');
+    System.debug('view===>' + view);
+    String transaction_type = (String) spendActivityObj.get('transactionType');
+    System.debug('transaction_type===>' + transaction_type);
+    Date fromDate = Date.valueOf((String) spendActivityObj.get('fromDate'));
+    System.debug('fromDate===>' + fromDate);
+    String amount = (String) spendActivityObj.get('amount');
+    System.debug('Amount===>' + amount);
+    Date toDate = Date.valueOf((String) spendActivityObj.get('toDate'));
+    System.debug('recordId===>' + accountId);
+
+    return [
+      SELECT ID, Account__c, Amount__c, TransactionType__c, CreatedById
+      FROM Notification__c
+      WHERE
+        Account__c = :accountId
+        AND TransactionType__c = :transaction_type
+        AND Amount__c = :amount
+        AND Createddate >= :fromDate
+        AND Createddate <= :toDate
+    ];
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static Account getNotificationRecords(String accountId) {
+    return [
+      SELECT
+        Id,
+        AccountNumber,
+        (
+          SELECT ID, Account__c, Amount__c, CardNumber__c, CreatedById
+          FROM Notifications__r
+        )
+      FROM Account
+      WHERE Id = :accountId
+      LIMIT 1
+    ];
+  }
+
+  @AuraEnabled(cacheable=false)
+  public static List<Alert__c> getActiveAlertRecords(String accountId) {
+    //Account acc=[SELECT ID,(SELECT ID,Credit_Card_Number__c FROM Assets) FROM Account WHERE Id=:accountId];
+    List<Asset> associatedAssets = [
+      SELECT ID, Credit_Card_Number__c
+      FROM Asset
+      WHERE AccountId = :accountId
+    ];
+    //List<Asset> assetList=acc.Assets;
+    List<String> creditCardNumbers = new List<String>();
+    for (Asset ass : associatedAssets) {
+      creditCardNumbers.add(ass.Credit_Card_Number__c);
+    }
     List<Alert__c> activeAlertRecords = [
       SELECT
         Id,
@@ -75,15 +149,23 @@ public with sharing class AlertController {
         Notes__c,
         Transcation_Type__c
       FROM Alert__c
-      WHERE AlertDate__c >= Today
-      LIMIT 20
+      WHERE AlertDate__c >= Today AND creditCardNumber__c IN :creditCardNumbers
     ];
     system.debug('activeALERTS====>' + activeAlertRecords);
     return activeAlertRecords;
   }
 
   @AuraEnabled(cacheable=false)
-  public static List<Alert__c> getExpiredAlertRecords() {
+  public static List<Alert__c> getExpiredAlertRecords(String accountId) {
+    List<Asset> associatedAssets = [
+      SELECT ID, Credit_Card_Number__c
+      FROM Asset
+      WHERE AccountId = :accountId
+    ];
+    List<String> creditCardNumbers = new List<String>();
+    for (Asset ass : associatedAssets) {
+      creditCardNumbers.add(ass.Credit_Card_Number__c);
+    }
     List<Alert__c> expiredAlertRecords = [
       SELECT
         Id,
@@ -94,9 +176,10 @@ public with sharing class AlertController {
         EmailRecipients__c,
         Merchant_Type__c,
         Notes__c,
+        creditCardNumber__c,
         Transcation_Type__c
       FROM Alert__c
-      WHERE AlertDate__c < Today
+      WHERE AlertDate__c < Today AND creditCardNumber__c IN :creditCardNumbers
     ];
     system.debug('ExpiredALERTS====>' + expiredAlertRecords);
     return expiredAlertRecords;

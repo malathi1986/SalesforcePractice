@@ -1,120 +1,187 @@
-import { LightningElement,track,wire,api } from 'lwc';
-import getActiveAlertRecords from '@salesforce/apex/AlertController.getActiveAlertRecords';
-import getExpiredAlertRecords from '@salesforce/apex/AlertController.getExpiredAlertRecords';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import {CurrentPageReference} from 'lightning/navigation';
+import { LightningElement, track, api } from "lwc";
+import getNotificationRecords from "@salesforce/apex/AlertController.getNotificationRecords";
+import getSpendActivityRecords from "@salesforce/apex/AlertController.getSpendActivityRecords";
+import getActiveAlertRecords from "@salesforce/apex/AlertController.getActiveAlertRecords";
+import getExpiredAlertRecords from "@salesforce/apex/AlertController.getExpiredAlertRecords";
 
-import myModal from 'c/newAlert';
+import myModal from "c/newAlert";
 
 const columns = [
-    { label: 'Id', fieldName: 'Id' },
-    { label: 'Alert Date', fieldName: 'AlertDate__c'},
-    { label: 'Alert Name', fieldName: 'AlertName__c'},
-    { label: 'Alert Type', fieldName: 'Alert_Type__c'},
-    { label: 'Amount', fieldName: 'Amount__c'},
-    { label: 'Email Receipients', fieldName: 'EmailRecipients__c'},
-    { label: 'Merchant Type', fieldName: 'Merchant_Type__c'},
-    { label: 'Notes', fieldName: 'Notes__c'},
-    { label: 'Transaction Type', fieldName: 'Transcation_Type__c'},
+  { label: "Id", fieldName: "Id" },
+  { label: "Alert Date", fieldName: "AlertDate__c" },
+  { label: "Alert Name", fieldName: "AlertName__c" },
+  { label: "Alert Type", fieldName: "Alert_Type__c" },
+  { label: "Amount", fieldName: "Amount__c" },
+  { label: "Email Receipients", fieldName: "EmailRecipients__c" },
+  { label: "Merchant Type", fieldName: "Merchant_Type__c" },
+  { label: "Notes", fieldName: "Notes__c" },
+  { label: "Transaction Type", fieldName: "Transcation_Type__c" }
 ];
 
-//AlertDate__c,AlertName__c,Alert_Type__c,Amount__c,EmailRecipients__c,Merchant_Type__c,Notes__c,Transcation_Type__c
+const notificationColumns = [
+  { label: "Id", fieldName: "Id" },
+  { label: "Account", fieldName: "Account__c" },
+  { label: "Amount", fieldName: "Amount__c" },
+  { label: "CardNumber", fieldName: "CardNumber__c" },
+  { label: "CreatedBy", fieldName: "CreatedById" }
+];
 
 export default class realtime_spend extends LightningElement {
+  @api recordId;
+  @track dataList;
+  @track dataTableColumns;
+  @track activeAlertRecordsList;
+  @track notificationsList;
+  @track expiredAlertRecordsList;
+  @track isNotificationRecords;
+  @track isActiveAlerts = false;
+  @track isExpiredAlerts = false;
+  @track isNotificationRecords = false;
+  @track expiredAlertValue;
+  @track error;
+  @track showAlertdatatable = true;
+  @track alert;
+  @track spendActivityInputData = {};
 
-    @api recordId;
-    @track activeAlertRecordsList;
-    @track expiredAlertRecordsList
-    @track isActiveAlerts=false;
-    @track isExpiredAlerts=false;
-    @track expiredAlertValue
-    @track error
-    @track showAlertdatatable=false;
-    @track alert;
+  //*page = 1; //initialize 1st page for pagination
+  //activeAlertRecordsList = []; //contains all the records.
+  result = []; //data displayed in the table
+  columns = columns; //holds column info.
+  notificationColumns = notificationColumns;
+  //startingRecord = 1; //start record position per page
+  //endingRecord = 0; //end record position per page
+  //pageSize = 10; //default value we are assigning
+  // totalRecountCount = 0; //total record count received from all retrieved records
+  //totalPage = 0; //total number of page is needed to display all records
+  selectedRows = [];
 
-    page = 1; //initialize 1st page for pagination
-    activeAlertRecordsList = []; //contains all the records.
-    result = []; //data displayed in the table
-    columns = columns;//holds column info.
-    startingRecord = 1; //start record position per page
-    endingRecord = 0; //end record position per page
-    pageSize = 10; //default value we are assigning
-    totalRecountCount = 0; //total record count received from all retrieved records
-    totalPage = 0; //total number of page is needed to display all records
-    selectedRows = [];
-
-
-    get alerttypes() {
-        return [
-            { label: 'New', value: 'new' },
-            { label: 'In Progress', value: 'inProgress' },
-            { label: 'Finished', value: 'finished' },
-        ];
-    }
-    get timeframeoptions() {
-        return [
-            { label: 'New', value: 'new' },
-            { label: 'In Progress', value: 'inProgress' },
-            { label: 'Finished', value: 'finished' },
-        ];
-    }
-    async handleAddAlert(){
-        /*let recordId=event.target.value;
-        this.template.querySelector('c-realtime_-spend').recordId = recordId;*/
-        console.log('recordId before opening the modal ======',this.recordId);
-        const result = await myModal.open({
-            size: 'medium',
-            description: 'Accessible description of modal\'s purpose',
-            content: {
-                accountId : this.recordId
-            },
+  get viewOptions() {
+    return [
+      { label: "Individual", value: "individual" },
+      { label: "Aggregated", value: "aggregated" }
+    ];
+  }
+  get transactionOutcomeOptions() {
+    return [
+      { label: "Approved", value: "approved" },
+      { label: "Declined", value: "declined" },
+      { label: "Approved or Declined", value: "approved or declined" }
+    ];
+  }
+  handleview(event) {
+    this.view = event.target.value;
+    console.log("View===>", this.view);
+  }
+  handletransactionOutcome(event) {
+    this.transactionOutcome = event.target.value;
+    console.log("transaction outcome===>", this.transactionOutcome);
+  }
+  handleMinAggregatedAmount(event) {
+    this.minimumAggregatedAmount = event.target.value;
+    console.log("AggregatedAmount===>", this.minimumAggregatedAmount);
+  }
+  handleSelectedFromDate(event) {
+    this.selectedFromDate = event.target.value;
+    console.log("FromDate===>", this.selectedFromDate);
+  }
+  handleSelectedToDate(event) {
+    this.selectedToDate = event.target.value;
+    console.log("ToDAte===>", this.selectedToDate);
+  }
+  handleShowResults(event) {
+    let spendActivityWrapper = {
+        recordId : this.recordId,
+        view:this.view,
+        transactionType:this.transactionOutcome,
+        amount:this.minimumAggregatedAmount,
+        fromDate: this.selectedFromDate,
+        toDate:this.selectedToDate
+ };
+ let spendActivityData = JSON.stringify(spendActivityWrapper);
+ getSpendActivityRecords({spendActivity: spendActivityData }).then((result) => {
+          //console.log("result---->", result["AlertName__c"]);
         });
-        console.log(result);
+   
 
-    }
-    async handlePagination(){
+  }
+ 
+  async handleAddAlert() {
+    console.log("recordId before opening the modal ======", this.recordId);
+    const result = await myModal.open({
+      size: "medium",
+      description: "Accessible description of modal's purpose",
+      content: {
+        accountId: this.recordId
+      }
+    });
+    console.log(result);
+  }
+  async handlePagination() {}
+  handleNotifications(event) {
+    console.log("Method invoked....", event);
+    getNotificationRecords({ accountId: this.recordId })
+      .then((result) => {
+        this.isNotificationRecords = true;
 
-    }
-    
-    handleActiveAlerts(event){
-        console.log('Method invoked....');
-        getActiveAlertRecords({
-        }).then((result) => {
-            console.log('Method callback invoked....', result);
-            this.isActiveAlerts=true;
-            this.isExpiredAlerts=false;
-            this.activeAlertRecordsList = result;
-            this.totalRecountCount = result.length;
-            this.totalPage = Math.ceil(this.totalRecountCount / this.pageSize);
-            //here we slice the data according page size
-            this.result = this.activeAlertRecordsList.slice(0, this.pageSize);
-            this.endingRecord = this.pageSize;
-            this.columns = columns;
-            this.error = undefined;
-            console.log("return from remote call");
-        }).catch((error) => {
-            console.log("some error in code:", error);
-            this.error = error;
-            this.result = undefined;
-            this.showToast(this.error, 'Error', 'Error'); 
-        });
-        console.log('Method finished....');
-    }
-    handleExpiredAlerts(){
-        getExpiredAlertRecords({
-        }).then((result) => {
-            this.isExpiredAlerts=true;
-            this.isActiveAlerts=false;
-            this.expiredAlertRecordsList = result;
-            
-        }).catch((error) => {
-            console.log("some error in code:", error);
-        });
+        this.isActiveAlerts = false;
+        this.isExpiredAlerts = false;
+        console.log("result:", result);
+        this.notificationColumns = notificationColumns;
+        console.log("result[] ", result.Id);
+        this.notificationsList = result["Notifications__r"];
+        this.columns = this.notificationColumns;
 
-    }
+        this.dataTableColumns = this.notificationColumns;
+        this.dataList = result["Notifications__r"];
 
-    //press on previous button this method will be called
-    previousHandler() {
+        // console.log('result------ ', this.notificationsList);
+      })
+      .catch((error) => {
+        console.log("some error in code:", error);
+      });
+  }
+  handleActiveAlerts(event) {
+    console.log("Method invoked....");
+    getActiveAlertRecords({ accountId: this.recordId })
+      .then((result) => {
+        console.log("Method callback invoked....", result);
+        this.isActiveAlerts = true;
+        this.isExpiredAlerts = false;
+        this.isNotificationRecords = false;
+        this.activeAlertRecordsList = result;
+
+        this.dataTableColumns = columns;
+        this.dataList = result;
+
+        this.error = undefined;
+        console.log("return from remote call");
+      })
+      .catch((error) => {
+        console.log("some error in code:", error);
+        this.error = error;
+        this.result = undefined;
+        // this.showToast(this.error, 'Error', 'Error');
+      });
+    console.log("Method finished....");
+  }
+  handleExpiredAlerts() {
+    getExpiredAlertRecords({ accountId: this.recordId })
+      .then((result) => {
+        console.log("Inside Expired Alerts Method....", result);
+        this.isExpiredAlerts = true;
+        this.isActiveAlerts = false;
+        this.isNotificationRecords = false;
+
+        this.dataTableColumns = columns;
+        this.dataList = result;
+      })
+      .catch((error) => {
+        console.log("some error in code:", error);
+      });
+  }
+
+  //press on previous button this method will be called
+  /*  previousHandler() {
         if (this.page > 1) {
             this.page = this.page - 1;
             this.displayRecordPerPage(this.page);
@@ -177,5 +244,5 @@ export default class realtime_spend extends LightningElement {
             mode: 'dismissable'
         });
         this.dispatchEvent(event);
-    }
+    }*/
 }
