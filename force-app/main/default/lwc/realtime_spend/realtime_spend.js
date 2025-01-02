@@ -35,6 +35,10 @@ const spendActivityColumns = [
 ];
 
 export default class realtime_spend extends LightningElement {
+  constructor(){
+    super();
+    console.log('constructor called....')
+  }  
   @api recordId;
   @track dataList = [];
   @track dataTableColumns;
@@ -47,9 +51,10 @@ export default class realtime_spend extends LightningElement {
   @track isNotificationRecords = false;
   @track expiredAlertValue;
   @track error;
-  @track showAlertdatatable = true;
+  @track isShowAlertdatatable = true;
   @track alert;
   @track isDataListEmpty=false;
+  @track isSpendActivityTab=true;
 
   //*page = 1; //initialize 1st page for pagination
   //activeAlertRecordsList = []; //contains all the records.
@@ -83,6 +88,7 @@ export default class realtime_spend extends LightningElement {
   }
 
   connectedCallback() {
+    this.dataList = undefined;
     window.clearTimeout(this.delayTimeout);
     this.delayTimeout = setTimeout(() => {
       console.log("=====", this.recordId);
@@ -129,7 +135,7 @@ export default class realtime_spend extends LightningElement {
     console.log("selectedTimeFrame===>", this.selectedTimeFrame);
   }
 
-  handleShowResults(event) {
+  handleSearch(event) {
     let spendActivityWrapper = {
       recordId: this.recordId,
       view: this.view,
