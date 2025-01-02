@@ -2,6 +2,18 @@ public with sharing class AlertController {
   public AlertController() {
   }
   @AuraEnabled(cacheable=false)
+  public static Map<String, String> getAssetNames(String accountId) {
+    System.debug(LoggingLevel.INFO, 'recordId =====' +accountId);
+    List<Asset> assets = [SELECT Id, Name, Credit_Card_Number__c FROM Asset WHERE AccountId =:accountId];
+    Map<String, String> creditCardNumberMap = new Map<String, String>();
+    for(Asset assetRecord : assets){
+      creditCardNumberMap.put(assetRecord.Credit_Card_Number__c, assetRecord.Name);
+    }
+    return creditCardNumberMap;
+  }
+  
+  
+  @AuraEnabled(cacheable=false)
   public static Alert__c insertAlertRecord(String alert) {
     Alert__c alertRecord;
     try {
@@ -77,36 +89,55 @@ public with sharing class AlertController {
     { label: 'Transaction Type', fieldName: 'Transcation_Type__c'},
  */
   @AuraEnabled(cacheable=false)
-  public static List<Notification__c> getSpendActivityRecords(
-    String spendActivity
-  ) {
+  public static List<Notification__c> getSpendActivityRecords(String spendActivity) {
+    
     System.debug('inside Apex method===>' + spendActivity);
     Map<String, Object> spendActivityObj = (Map<String, Object>) JSON.deserializeUntyped(
       spendActivity
     );
     String accountId = (String) spendActivityObj.get('recordId');
-    Object view = spendActivityObj.get('view');
+    String view = (String) spendActivityObj.get('view');
     System.debug('view===>' + view);
     String transaction_type = (String) spendActivityObj.get('transactionType');
     System.debug('transaction_type===>' + transaction_type);
-    Date fromDate = Date.valueOf((String) spendActivityObj.get('fromDate'));
-    System.debug('fromDate===>' + fromDate);
+    System.debug('timeframe===>' + spendActivityObj.get('timeFrame'));
+    Integer timeFrame = Integer.valueOf(
+      (String) spendActivityObj.get('timeFrame')
+    );
+
+    // View = Aggregated,
+    // View = 242423423423423
+
+    // If view is aggregated, than we need to pull all the transactions from the account.
+    // If specific card number is selected, then we need to fetch the transactions related to that card number.
+
     String amount = (String) spendActivityObj.get('amount');
     System.debug('Amount===>' + amount);
-    Date toDate = Date.valueOf((String) spendActivityObj.get('toDate'));
-    System.debug('recordId===>' + accountId);
+    
+    String queryResult =
+      'SELECT ID, Account__c, Amount__c, TransactionType__c, CreatedById ' +
+      'FROM Notification__c ' +
+      'WHERE ' +
+      'Account__c = :accountId ' +
+      'AND TransactionType__c = :transaction_type ' +
+      'AND Amount__c = :amount ';
 
-    return [
-      SELECT ID, Account__c, Amount__c, TransactionType__c, CreatedById
-      FROM Notification__c
-      WHERE
-        Account__c = :accountId
-        AND TransactionType__c = :transaction_type
-        AND Amount__c = :amount
-        AND Createddate >= :fromDate
-        AND Createddate <= :toDate
-    ];
+    if (timeFrame == 30) {
+      queryResult = queryResult + 'AND CreatedDate >= LAST_N_DAYS:30 ';
+    }
+    if (timeFrame == 60) {
+      queryResult = queryResult + 'AND CreatedDate >= LAST_N_DAYS:60 ';
+    }
+    if (timeFrame == 90) {
+      queryResult = queryResult + 'AND CreatedDate >= LAST_N_DAYS:90 ';
+    } 
+    if(view != 'Aggregated'){
+      Decimal cardNumber = Decimal.valueOf(view);
+      queryResult = queryResult + 'AND CardNumber__c =:cardNumber';
+    }
+    return Database.query(queryResult);
   }
+
 
   @AuraEnabled(cacheable=false)
   public static Account getNotificationRecords(String accountId) {

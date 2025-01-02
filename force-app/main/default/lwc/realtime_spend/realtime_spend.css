@@ -1,9 +1,10 @@
 .slds-modal__container {
-    max-width: 100rem !important;
+   max-width: 100rem !important;
     width: 100% !important;
     position: relative;
     padding-top: 0%;
     vertical-align:top;
+   
 }
 .inner-comp {
     width: 20%;
@@ -17,8 +18,15 @@
     font-weight: bold;
     font-size: larger;
 }
+
 .slds-modal__container_alert {
     height: 35px;
     padding-bottom: 15px;
     display: flex;
+}
+
+.slds-modal__container_viewalerts {
+    height: 155px;
+    padding-bottom: 5px;
+    width: 100%;
 }

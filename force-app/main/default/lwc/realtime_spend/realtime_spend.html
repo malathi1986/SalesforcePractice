@@ -1,54 +1,118 @@
 <template>
-    <lightning-tabset>
-        <lightning-tab label="Spend Activity" class="lightning-tab-css">
-            <div class="slds-modal__container">
-                <div>
-                    <lightning-combobox name="view" label="VIEW:" value={value} placeholder="Select View"
-                        options={viewOptions} onchange={handleview} class="inner-comp"></lightning-combobox>
+  <lightning-tabset>
+    <lightning-tab label="Spend Activity" class="lightning-tab-css">
+      <div class="slds-modal__container_viewalerts">
+        <div>
+          <lightning-combobox
+            name="view"
+            label="VIEW:"
+            value={value}
+            placeholder="Select View"
+            options={viewOptions}
+            onchange={handleview}
+            class="inner-comp"
+          ></lightning-combobox>
 
-                    <lightning-combobox name="transactionOutcome" label="TRANSACTION OUTCOME:" value={value}
-                        placeholder="Select TransactionOutcome" options={transactionOutcomeOptions}
-                        onchange={handletransactionOutcome} class="inner-comp"></lightning-combobox>
+          <lightning-combobox
+            name="transactionOutcome"
+            label="TRANSACTION OUTCOME:"
+            value={value}
+            placeholder="Select TransactionOutcome"
+            options={transactionOutcomeOptions}
+            onchange={handletransactionOutcome}
+            class="inner-comp"
+          ></lightning-combobox>
 
-                    <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend"
-                        label="MIN.AGGREGATED AMOUNT:" onchange={handleMinAggregatedAmount} value={value} class="inner-comp"></lightning-input>
+          <lightning-input
+            type="text"
+            placeholder="Required Minimum $2500."
+            name="minAggregatedSpend"
+            label="MIN.AGGREGATED AMOUNT:"
+            onchange={handleMinAggregatedAmount}
+            value={value}
+            class="inner-comp"
+          ></lightning-input>
 
-                    <lightning-input type="date" label="FROM DATE" value={selectedFromDate}
-                        onchange={handleSelectedFromDate} style="overflow: auto !important;"></lightning-input>
+          <lightning-combobox
+            name="timeFrame"
+            label="TIME FRAME:"
+            value={value}
+            placeholder="Select TimeFrame"
+            options={timeFrameOptions}
+            onchange={handleTimeFrame}
+            class="inner-comp"
+          ></lightning-combobox>
 
-                    <lightning-input type="date" label="TO DATE" value={selectedToDate} onchange={handleSelectedToDate}
-                    style="overflow: auto !important;"></lightning-input>
+          <lightning-button
+            variant="brand"
+            label="Search"
+            title="Primary action"
+            onclick={handleShowResults}
+            class="inner-comp"
+            style="width: 40px"
+          ></lightning-button>
+        </div>
+      </div>
+      <div>
+        <template if:true={isDataListEmpty}><p>No records Found</p></template>
+        <template if:true={dataList}>
+          <lightning-datatable
+            key-field="Id"
+            data={dataList}
+            columns={dataTableColumns}
+          >
+          </lightning-datatable>
+        </template>
+      </div>
+    </lightning-tab>
+    <lightning-tab label="Alerts">
+      <div class="slds-modal__container_alert">
+        <div>
+          <lightning-button
+            variant="Neutral"
+            label="Notifications"
+            title="Primary action"
+            onclick={handleNotifications}
+            class="slds-m-left_x-small"
+          ></lightning-button>
 
-                    <lightning-button variant="brand" label="Show Results >" title="Primary action"
-                        onclick={handleShowResults} class="inner-comp"></lightning-button>
+          <lightning-button
+            variant="Neutral"
+            label="Active Alerts"
+            title="Primary action"
+            onclick={handleActiveAlerts}
+            value={activeAlertValue}
+            class="slds-m-left_x-small"
+          ></lightning-button>
 
-                </div>
-            </div>
-        </lightning-tab>
-        <lightning-tab label="Alerts">
-            <div class="slds-modal__container_alert">
-                <div>
-                    <lightning-button variant="Neutral" label="Notifications" title="Primary action"
-                        onclick={handleNotifications} class="slds-m-left_x-small"></lightning-button>
+          <lightning-button
+            variant="Neutral"
+            label="Expired Alerts"
+            title="Primary action"
+            onclick={handleExpiredAlerts}
+            value={expiredAlertValue}
+            class="slds-m-left_x-small"
+          ></lightning-button>
 
-                    <lightning-button variant="Neutral" label="Active Alerts" title="Primary action"
-                        onclick={handleActiveAlerts} value={activeAlertValue}
-                        class="slds-m-left_x-small"></lightning-button>
-
-                    <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action"
-                        onclick={handleExpiredAlerts} value={expiredAlertValue}
-                        class="slds-m-left_x-small"></lightning-button>
-
-                    <lightning-button variant="brand" label="+ Add Alert" title="Primary action"
-                        onclick={handleAddAlert} class="slds-m-left_x-small"></lightning-button>
-                </div>
-            </div>
-            <div>
-                <template if:true={dataList}>
-                    <lightning-datatable key-field="Id" data={dataList} columns={dataTableColumns}>
-                    </lightning-datatable>
-                </template>
-            </div>
-        </lightning-tab>
-    </lightning-tabset>
+          <lightning-button
+            variant="brand"
+            label="+ Add Alert"
+            title="Primary action"
+            onclick={handleAddAlert}
+            class="slds-m-left_x-small"
+          ></lightning-button>
+        </div>
+      </div>
+      <div>
+        <template if:true={dataList}>
+          <lightning-datatable
+            key-field="Id"
+            data={dataList}
+            columns={dataTableColumns}
+          >
+          </lightning-datatable>
+        </template>
+      </div>
+    </lightning-tab>
+  </lightning-tabset>
 </template>
