@@ -6,6 +6,7 @@ import getExpiredAlertRecords from "@salesforce/apex/AlertController.getExpiredA
 import getAssetNames from "@salesforce/apex/AlertController.getAssetNames";
 
 import myModal from "c/newAlert";
+import UserPreferencesReminderSoundOff from "@salesforce/schema/User.UserPreferencesReminderSoundOff";
 
 const columns = [
   { label: "Id", fieldName: "Id" },
@@ -35,6 +36,10 @@ const spendActivityColumns = [
 ];
 
 export default class realtime_spend extends LightningElement {
+  constructor() {
+    super();
+    console.log("constructor called....");
+  }
   @api recordId;
   @track dataList = [];
   @track dataTableColumns;
@@ -47,9 +52,16 @@ export default class realtime_spend extends LightningElement {
   @track isNotificationRecords = false;
   @track expiredAlertValue;
   @track error;
-  @track showAlertdatatable = true;
+  @track isShowAlertdatatable = true;
   @track alert;
-  @track isDataListEmpty=false;
+  @track isDataListEmpty = false;
+  @track isSpendActivityTab = true;
+  @track isViewNameEntered = true;
+  @track isTransactionEntered = true;
+  @track isMinimumAggregatedAmountEntered = true;
+  @track isSelectedTimeFrameEntered = true;
+  @track showSearchResultsTable = false;
+  @track showAlertsTable = false;
 
   //*page = 1; //initialize 1st page for pagination
   //activeAlertRecordsList = []; //contains all the records.
@@ -83,6 +95,7 @@ export default class realtime_spend extends LightningElement {
   }
 
   connectedCallback() {
+    this.dataList = undefined;
     window.clearTimeout(this.delayTimeout);
     this.delayTimeout = setTimeout(() => {
       console.log("=====", this.recordId);
@@ -114,22 +127,70 @@ export default class realtime_spend extends LightningElement {
   }
   handleview(event) {
     this.view = event.target.value;
+    this.isViewNameEntered = true;
     console.log("View===>", this.view);
   }
   handletransactionOutcome(event) {
     this.transactionOutcome = event.target.value;
+    this.isTransactionEntered = true;
     console.log("transaction outcome===>", this.transactionOutcome);
   }
   handleMinAggregatedAmount(event) {
     this.minimumAggregatedAmount = event.target.value;
+    this.isMinimumAggregatedAmountEntered = true;
     console.log("AggregatedAmount===>", this.minimumAggregatedAmount);
   }
   handleTimeFrame(event) {
     this.selectedTimeFrame = event.target.value;
+    this.isSelectedTimeFrameEntered = true;
     console.log("selectedTimeFrame===>", this.selectedTimeFrame);
   }
 
-  handleShowResults(event) {
+  getElement(elementName, id) {
+    let divElements = this.template.querySelectorAll(elementName);
+    let foundElement;
+    divElements.forEach((divElement) => {
+      console.log("elements Id ", divElement.id === undefined);
+      console.log("elements Id ", divElement.id);
+      console.log("elements Id type ", typeof divElement.id);
+      if (divElement.id !== " " && divElement.id.trim().includes(id)) {
+        console.log("elements found ...");
+        foundElement = divElement;
+      }
+    });
+    return foundElement;
+  }
+
+  handleTabClick(event) {
+    this.dataList = undefined;
+  }
+
+  validateInputForm() {
+    let isValid = true;
+    if (this.view === undefined) {
+      this.isViewNameEntered = false;
+      isValid = false;
+    }
+    if (this.transactionOutcome === undefined) {
+      this.isTransactionEntered = false;
+      isValid = false;
+    }
+    if (this.minimumAggregatedAmount === undefined) {
+      this.isMinimumAggregatedAmountEntered = false;
+      isValid = false;
+    }
+    if (this.selectedTimeFrame === undefined) {
+      this.isSelectedTimeFrameEntered = false;
+      isValid = false;
+    }
+    return isValid;
+  }
+
+  handleSearch(event) {
+    if (!this.validateInputForm()) {
+      return;
+    }
+
     let spendActivityWrapper = {
       recordId: this.recordId,
       view: this.view,
@@ -137,19 +198,19 @@ export default class realtime_spend extends LightningElement {
       amount: this.minimumAggregatedAmount,
       timeFrame: this.selectedTimeFrame
     };
+
     let spendActivityData = JSON.stringify(spendActivityWrapper);
     getSpendActivityRecords({ spendActivity: spendActivityData }).then(
       (result) => {
-        this.isActiveAlerts = false;
         this.dataTableColumns = spendActivityColumns;
-        
-        if(result.length === 0){
-            this.isDataListEmpty=true;
-            this.dataList = undefined;
-        }else{
-            this.isDataListEmpty=false;
-            this.dataList = result;
-            this.error = undefined;
+
+        if (result.length === 0) {
+          this.isDataListEmpty = true;
+          this.dataList = undefined;
+        } else {
+          this.isDataListEmpty = false;
+          this.dataList = result;
+          this.error = undefined;
         }
       }
     );
@@ -167,12 +228,14 @@ export default class realtime_spend extends LightningElement {
     console.log(result);
   }
   async handlePagination() {}
+
   handleNotifications(event) {
     getNotificationRecords({ accountId: this.recordId })
       .then((result) => {
         this.isNotificationRecords = true;
         this.isActiveAlerts = false;
         this.isExpiredAlerts = false;
+        this.isSpendActivityTab = false;
         this.dataTableColumns = this.notificationColumns;
         this.dataList = result["Notifications__r"];
         this.error = undefined;
@@ -189,7 +252,7 @@ export default class realtime_spend extends LightningElement {
         this.isActiveAlerts = true;
         this.isExpiredAlerts = false;
         this.isNotificationRecords = false;
-
+        this.isSpendActivityTab = false;
         this.dataTableColumns = columns;
         this.dataList = result;
 
@@ -211,6 +274,7 @@ export default class realtime_spend extends LightningElement {
         this.isExpiredAlerts = true;
         this.isActiveAlerts = false;
         this.isNotificationRecords = false;
+        this.isSpendActivityTab = false;
         this.dataTableColumns = columns;
         this.dataList = result;
       })
