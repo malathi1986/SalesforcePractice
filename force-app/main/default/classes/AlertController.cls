@@ -119,8 +119,14 @@ public with sharing class AlertController {
       'FROM Notification__c ' +
       'WHERE ' +
       'Account__c = :accountId ' +
-      'AND TransactionType__c = :transaction_type ' +
       'AND Amount__c = :amount ';
+ 
+      if (transaction_type=='approved' || transaction_type=='declined'){
+        queryResult = queryResult+'AND TransactionType__c = :transaction_type ';
+      }
+      if (transaction_type=='approved or declined'){
+        queryResult = queryResult+'AND ( TransactionType__c = \'approved\' OR TransactionType__c = \'declined\')';
+      }
 
     if (timeFrame == 30) {
       queryResult = queryResult + 'AND CreatedDate >= LAST_N_DAYS:30 ';
