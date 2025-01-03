@@ -4,6 +4,7 @@
     position: relative;
     padding-top: 0%;
     vertical-align:top;
+    
    
 }
 .inner-comp {
@@ -29,4 +30,41 @@
     height: 155px;
     padding-bottom: 5px;
     width: 100%;
+}
+.app {
+    background-color: #fafaf9;
+    height: 100vh;
+    overflow: scroll;
+}
+.scrollbar
+{
+    width: 98%;
+    margin-left: 15px;
+    margin-top: 10px;
+    height: 150px;
+    background: #F5F5F5;
+    overflow-y: scroll;
+}
+
+.force-overflow
+{
+    min-height: 450px;
+    padding: 1em;
+}
+
+.style-3::-webkit-scrollbar-track
+{
+    background-color: #F5F5F5;
+}
+
+.style-3::-webkit-scrollbar
+{
+    width: 3px;
+    background-color: hwb(0 97% 2%);
+}
+
+.style-3::-webkit-scrollbar-thumb
+{
+    background-color: hsl(200, 2%, 72%);
+    border-radius: 3px;
 }
