@@ -15,7 +15,7 @@ const columns = [
 export default class NewAlert extends LightningModal {
   @track alertRecord = {};
   @api content;
-  @track header = "I am queeen";
+  @track header = "New Alert";
   @api recordId;
   @track assetRecordsList;
   @track alertId;
