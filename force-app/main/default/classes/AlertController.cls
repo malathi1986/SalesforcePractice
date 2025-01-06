@@ -1,6 +1,5 @@
 public with sharing class AlertController {
-  public AlertController() {
-  }
+  
   @AuraEnabled(cacheable=false)
   public static Map<String, String> getAssetNames(String accountId) {
     System.debug(LoggingLevel.INFO, 'recordId =====' +accountId);
@@ -15,6 +14,7 @@ public with sharing class AlertController {
   
   @AuraEnabled(cacheable=false)
   public static Alert__c insertAlertRecord(String alert) {
+    System.debug(LoggingLevel.INFO, 'ALERT ---'+ JSON.serialize(alert));
     Alert__c alertRecord;
     try {
       List<Alert__c> alerts = new List<Alert__c>();
@@ -90,11 +90,12 @@ public with sharing class AlertController {
  */
   @AuraEnabled(cacheable=false)
   public static List<Notification__c> getSpendActivityRecords(String spendActivity) {
-    
-    System.debug('inside Apex method===>' + spendActivity);
+    System.debug(LoggingLevel.INFO, 'ALERT ---'+ JSON.serialize(spendActivity));
+    System.debug(LoggingLevel.INFO, 'inside Apex method===>' + spendActivity);
     Map<String, Object> spendActivityObj = (Map<String, Object>) JSON.deserializeUntyped(
       spendActivity
     );
+   
     String accountId = (String) spendActivityObj.get('recordId');
     String view = (String) spendActivityObj.get('view');
     System.debug('view===>' + view);
@@ -188,7 +189,7 @@ public with sharing class AlertController {
       FROM Alert__c
       WHERE AlertDate__c >= Today AND creditCardNumber__c IN :creditCardNumbers
     ];
-    system.debug('activeALERTS====>' + activeAlertRecords);
+    System.debug('activeALERTS====>' + activeAlertRecords);
     return activeAlertRecords;
   }
 
