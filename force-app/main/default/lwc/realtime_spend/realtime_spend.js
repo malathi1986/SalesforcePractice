@@ -32,7 +32,7 @@ const spendActivityColumns = [
   { label: "Account", fieldName: "Account__c" },
   { label: "Transaction Outcome", fieldName: "TransactionType__c" },
   { label: "Amount", fieldName: "Amount__c" },
-  { label: "Transaction Date", fieldName: "Createddate" }
+  { label: "Transaction Date", fieldName: "CreatedDate" }
 ];
 
 export default class realtime_spend extends LightningElement {
@@ -42,6 +42,7 @@ export default class realtime_spend extends LightningElement {
   }
   @api recordId;
   @track dataList = [];
+  @track selectedSpecificDates = {};
   @track dataTableColumns;
   @track activeAlertRecordsList;
   @track notificationsList;
@@ -51,15 +52,19 @@ export default class realtime_spend extends LightningElement {
   @track isExpiredAlerts = false;
   @track isNotificationRecords = false;
   @track expiredAlertValue;
-  @track error;
+  @track error='';
   @track isShowAlertdatatable = true;
   @track alert;
+  @ track selectedTimeFrame;
+  
   @track isDataListEmpty = false;
+  @ track isShowDatePicker=false;
   @track isSpendActivityTab = true;
   @track isViewNameEntered = true;
   @track isTransactionEntered = true;
   @track isMinimumAggregatedAmountEntered = true;
   @track isSelectedTimeFrameEntered = true;
+  @track isselectedSpecificDatesEntered=true;
   @track showSearchResultsTable = false;
   @track showAlertsTable = false;
 
@@ -90,7 +95,9 @@ export default class realtime_spend extends LightningElement {
     return [
       { label: "Past 30 Days", value: "30" },
       { label: "Past 60 Days", value: "60" },
-      { label: "Past 90 Days", value: "90" }
+      { label: "Past 90 Days", value: "90" },
+      { label: "Specific date", value: "SpecificDate" }
+
     ];
   }
 
@@ -143,10 +150,30 @@ export default class realtime_spend extends LightningElement {
   handleTimeFrame(event) {
     this.selectedTimeFrame = event.target.value;
     this.isSelectedTimeFrameEntered = true;
+    this.isShowDatePicker=false;
     console.log("selectedTimeFrame===>", this.selectedTimeFrame);
+    if(this.selectedTimeFrame==='SpecificDate'){
+      this.isShowDatePicker=true;
+
+    }
+  }
+  handleSpecificDate(event){
+    console.log("specificDate===>", event.currentTarget.name);
+    if(event.currentTarget.name === 'fromDate'){
+      this.selectedSpecificDates['fromDate'] = event.target.value;
+    }
+    if(event.currentTarget.name === 'toDate'){
+      this.selectedSpecificDates['toDate'] = event.target.value;
+    }
+    //this.specificDate = event.target.value;
+    //console.log("specificDate===>", this.specificDate);
+    //this.selectedSpecificDates.push(this.specificDate);
+
+    console.log("specificDates[]===>", JSON.stringify(this.selectedSpecificDates));
+
   }
 
-  getElement(elementName, id) {
+ /* getElement(elementName, id) {
     let divElements = this.template.querySelectorAll(elementName);
     let foundElement;
     divElements.forEach((divElement) => {
@@ -159,7 +186,7 @@ export default class realtime_spend extends LightningElement {
       }
     });
     return foundElement;
-  }
+  }*/
 
   handleTabClick(event) {
     this.dataList = undefined;
@@ -183,6 +210,10 @@ export default class realtime_spend extends LightningElement {
       this.isSelectedTimeFrameEntered = false;
       isValid = false;
     }
+    if (this.selectedSpecificDates === undefined) {
+      this.isselectedSpecificDatesEntered = false;
+      isValid = false;
+    }
     return isValid;
   }
 
@@ -196,7 +227,8 @@ export default class realtime_spend extends LightningElement {
       view: this.view,
       transactionType: this.transactionOutcome,
       amount: this.minimumAggregatedAmount,
-      timeFrame: this.selectedTimeFrame
+      timeFrame: this.selectedTimeFrame,
+      customDateRange:this.selectedSpecificDates
     };
 
     let spendActivityData = JSON.stringify(spendActivityWrapper);
@@ -207,13 +239,18 @@ export default class realtime_spend extends LightningElement {
         if (result.length === 0) {
           this.isDataListEmpty = true;
           this.dataList = undefined;
+         // this.error = 'Error fetching records: ' + error.body.message;
         } else {
+          console.log('result ------ ', result);
           this.isDataListEmpty = false;
           this.dataList = result;
           this.error = undefined;
         }
       }
-    );
+    )
+    .catch(error => {
+      console.error('e.message => ' + error.message );
+  });
   }
 
   async handleAddAlert() {

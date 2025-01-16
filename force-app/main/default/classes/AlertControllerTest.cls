@@ -123,6 +123,14 @@ private class AlertControllerTest {
       CreatedDate = System.today() - 70
     );
     notifications.add(notification5);
+   
+    Notification__c notification6 = new Notification__c(
+      Account__c = acc.Id,
+      Amount__c = '6000',
+      TransactionType__c = 'Approved',
+      CardNumber__c = Decimal.valueOf(asset2.Credit_Card_Number__c)
+    );
+    notifications.add(notification6);
 
     insert notifications;
     notifications = [
@@ -186,6 +194,10 @@ private class AlertControllerTest {
       "transactionType": "declined",
       "amount": "3000",
       "timeFrame": "30"
+      "customDateRange":{
+    "fromDate": "2025-01-07",
+    "toDate": "2025-01-22"
+  }
     }*/
       Test.startTest();
       Account accId = [
@@ -339,7 +351,46 @@ private class AlertControllerTest {
       System.debug('Error Message====>' + e.getMessage());
     }
   }
+  @isTest
+  static void getSpendActivityRecords_specificDateCheck_OneNotificationsReturned() {
+    try {
+      /*{
+      "recordId": "0016R00003PDSbpQAH",
+      "view": "Aggregated",
+      "transactionType": "declined",
+      "amount": "3000",
+      "timeFrame": "30"
+      "customDateRange":{
+    "fromDate": "2025-01-07",
+    "toDate": "2025-01-22"
+  }
+    }*/
+      Test.startTest();
+      Account accId = [
+        SELECT Id
+        FROM Account
+        WHERE Name = 'TestAccountRecords'
+        LIMIT 1
+      ];
+      Date todayDate = System.today();
+      Date pastDate=System.today()-40;
+      String specifiedFromDate = pastDate.Year()+'-'+pastDate.Month()+'-'+pastDate.day();
+      String specifiedToDate = todayDate.Year()+'-'+todayDate.Month()+'-'+todayDate.day();
+      System.debug(LoggingLevel.INFO ,'ToDate======>'+ specifiedToDate);
 
+      String inputString =
+        '{"recordId":"' +
+        accId.Id +
+        '","view":"343455567778889","transactionType":"declined","amount":"3000","timeFrame":"SpecificDate"}';
+      List<Notification__c> listOfspendActivityRecords = AlertController.getSpendActivityRecords(
+        inputString
+      );
+      System.assertEquals(1, listOfspendActivityRecords.size());
+      Test.stopTest();
+    } catch (Exception e) {
+      System.debug('Error Message====>' + e.getMessage());
+    }
+  }
 
   @isTest
   static void test_getActiveAlertRecords() {
@@ -413,7 +464,7 @@ private class AlertControllerTest {
       ];
       Account acc = AlertController.getNotificationRecords(accId.Id);
       List<Notification__c> notifications = acc.Notifications__r;
-      system.assertequals(5, notifications.size());
+      system.assertequals(6, notifications.size());
       Test.stopTest();
     } catch (Exception e) {
       System.debug('Error Message====>' + e.getMessage());

@@ -1,116 +1,72 @@
 <template>
   <lightning-tabset>
-    <lightning-tab
-      label="Spend Activity"
-      class="lightning-tab-css"
-      value="1"
-      onactive={handleTabClick}
-    >
-      <div class="scrollbar style-3" id="spend_activity">
-        <div
-          class="slds-modal__container_viewalerts scrollbar style-3"
-          style="display: flex; width: fit-content"
-        >
-          <div style="display: flex">
-            <div>
-              <lightning-combobox
-                name="view"
-                label="VIEW:"
-                value={value}
-                placeholder="Select View"
-                options={viewOptions}
-                onchange={handleview}
-                class="inner-comp"
-                required
-                style="width: fit-content"
-              ></lightning-combobox>
+    <lightning-tab label="Spend Activity" class="lightning-tab-css" value="1" onactive={handleTabClick}>
+      <div class="scrollbar style-3" id="spend_activity" style="height: 300px;">
 
-              <template if:false={isViewNameEntered}>
-                <lightning-formatted-text
-                  style="color: red"
-                  value="View Name is not Entered"
-                ></lightning-formatted-text>
-              </template>
-            </div>
+        <div style="display: flex">
+          <div>
+            <lightning-combobox name="view" label="VIEW:" value={value} placeholder="Select View" options={viewOptions}
+              onchange={handleview} class="inner-comp" required style="width: fit-content"></lightning-combobox>
             <div>
-              <lightning-combobox
-                name="transactionOutcome"
-                label="OUTCOME:"
-                value={value}
-                placeholder="Select TransactionOutcome"
-                options={transactionOutcomeOptions}
-                onchange={handletransactionOutcome}
-                class="inner-comp"
-                required
-                style="width: fit-content"
-              ></lightning-combobox>
-              <template if:false={isTransactionEntered}>
-                <lightning-formatted-text
-                  style="color: red"
-                  value="Transaction Name is not Entered"
-                ></lightning-formatted-text>
-              </template>
-            </div>
-            <div>
-              <lightning-input
-                type="text"
-                placeholder="Required Minimum $2500."
-                name="minAggregatedSpend"
-                label="AMOUNT:"
-                onchange={handleMinAggregatedAmount}
-                value={value}
-                class="inner-comp"
-                required
-                style="width: max-content"
-              ></lightning-input>
-              <template if:false={isMinimumAggregatedAmountEntered}>
-                <lightning-formatted-text
-                  style="color: red"
-                  value="Amount is not Entered"
-                ></lightning-formatted-text>
-              </template>
-            </div>
-            <div>
-              <lightning-combobox
-                name="timeFrame"
-                label="TIME FRAME:"
-                value={value}
-                placeholder="Select TimeFrame"
-                options={timeFrameOptions}
-                onchange={handleTimeFrame}
-                class="inner-comp"
-                style="width: fit-content"
-              ></lightning-combobox>
-              <template if:false={isSelectedTimeFrameEntered}>
-                <lightning-formatted-text
-                  style="color: red"
-                  value="TimeFrame is not Entered"
-                ></lightning-formatted-text>
-              </template>
-            </div>
-            <div>
-              <div>&nbsp;</div>
-              <lightning-button
-                variant="brand"
-                label="Search"
-                title="Primary action"
-                onclick={handleSearch}
-                class="inner-comp"
-                style="width: max-content"
-              ></lightning-button>
+            <template if:false={isViewNameEntered}>
+              <lightning-formatted-text style="color: red" value="View Name is not Entered"></lightning-formatted-text>
+            </template>
             </div>
           </div>
+          <div>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <lightning-combobox name="transactionOutcome" label="OUTCOME:" value={value}
+              placeholder="Select TransactionOutcome" options={transactionOutcomeOptions}
+              onchange={handletransactionOutcome} class="inner-comp" required
+              style="width: fit-content"></lightning-combobox>
+              <div>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+            <template if:false={isTransactionEntered}>
+              <lightning-formatted-text style="color: red"
+                value="Transaction Name is not Entered"></lightning-formatted-text>
+            </template>
+              </div>
+          </div>
+        </div>
+        <div style="display: flex">
+          <div>
+          <lightning-input type="text" placeholder="Required Minimum $2500." name="minAggregatedSpend" label="AMOUNT:"
+            onchange={handleMinAggregatedAmount} value={value} class="inner-comp" required
+            style="width: max-content"></lightning-input>
+            <div>
+          <template if:false={isMinimumAggregatedAmountEntered}>
+            <lightning-formatted-text style="color: red" value="Amount is not Entered"></lightning-formatted-text>
+          </template></div></div>
+          <div>
+          <lightning-combobox name="timeFrame" label="TIME FRAME:" value={value} placeholder="Select TimeFrame"
+            options={timeFrameOptions} onchange={handleTimeFrame} class="inner-comp"
+            style="width: fit-content"></lightning-combobox>
+            <div>
+          <template if:true={isShowDatePicker}>
+            <lightning-input name="fromDate" type="date" label="From Date" class="date-picker"
+              onchange={handleSpecificDate} value={value}></lightning-input>
+            <lightning-input name="toDate" type="date" label="To Date" class="date-picker" onchange={handleSpecificDate}
+              value={value}></lightning-input>
+          </template>
+            </div>
+           <div>
+          <template if:false={isSelectedTimeFrameEntered}>
+            <lightning-formatted-text style="color: red" value="TimeFrame is not Entered"></lightning-formatted-text>
+          </template>
+          </div></div>
+        </div>
+        <div>
+          <lightning-button variant="brand" label="Search" title="Primary action" onclick={handleSearch}
+            class="inner-comp" style="width: max-content"></lightning-button>
         </div>
       </div>
       <div>
-        <template if:true={isDataListEmpty}><p>No records Found</p></template>
+        <template if:true={isDataListEmpty}>
+          <p>No records Found</p>
+        </template>
 
         <template if:true={dataList}>
-          <lightning-datatable
-            key-field="Id"
-            data={dataList}
-            columns={dataTableColumns}
-          >
+          <lightning-datatable key-field="Id" data={dataList} columns={dataTableColumns}>
           </lightning-datatable>
         </template>
       </div>
@@ -118,48 +74,22 @@
     <lightning-tab label="Alerts" value="2" onactive={handleTabClick}>
       <div class="slds-modal__container_alert" id="alerts_tab">
         <div>
-          <lightning-button
-            variant="Neutral"
-            label="Notifications"
-            title="Primary action"
-            onclick={handleNotifications}
-            class="slds-m-left_x-small"
-          ></lightning-button>
+          <lightning-button variant="Neutral" label="Notifications" title="Primary action" onclick={handleNotifications}
+            class="slds-m-left_x-small"></lightning-button>
 
-          <lightning-button
-            variant="Neutral"
-            label="Active Alerts"
-            title="Primary action"
-            onclick={handleActiveAlerts}
-            value={activeAlertValue}
-            class="slds-m-left_x-small"
-          ></lightning-button>
+          <lightning-button variant="Neutral" label="Active Alerts" title="Primary action" onclick={handleActiveAlerts}
+            value={activeAlertValue} class="slds-m-left_x-small"></lightning-button>
 
-          <lightning-button
-            variant="Neutral"
-            label="Expired Alerts"
-            title="Primary action"
-            onclick={handleExpiredAlerts}
-            value={expiredAlertValue}
-            class="slds-m-left_x-small"
-          ></lightning-button>
+          <lightning-button variant="Neutral" label="Expired Alerts" title="Primary action"
+            onclick={handleExpiredAlerts} value={expiredAlertValue} class="slds-m-left_x-small"></lightning-button>
 
-          <lightning-button
-            variant="brand"
-            label="+ Add Alert"
-            title="Primary action"
-            onclick={handleAddAlert}
-            class="slds-m-left_x-small"
-          ></lightning-button>
+          <lightning-button variant="brand" label="+ Add Alert" title="Primary action" onclick={handleAddAlert}
+            class="slds-m-left_x-small"></lightning-button>
         </div>
       </div>
       <div>
         <template if:true={dataList}>
-          <lightning-datatable
-            key-field="Id"
-            data={dataList}
-            columns={dataTableColumns}
-          >
+          <lightning-datatable key-field="Id" data={dataList} columns={dataTableColumns}>
           </lightning-datatable>
         </template>
       </div>
